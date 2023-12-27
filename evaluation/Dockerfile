@@ -66,6 +66,9 @@ RUN wget https://binaries2.erlang-solutions.com/ubuntu/pool/contrib/e/elixir/eli
 RUN mkdir -p /root/dafny
 RUN wget https://github.com/dafny-lang/dafny/releases/download/v4.3.0/dafny-4.3.0-x64-ubuntu-20.04.zip -O /tmp/dafny.zip && unzip /tmp/dafny.zip -d /root/dafny/ && ln -s /root/dafny/dafny/dafny /bin/dafny
 
+# Pyret
+RUN npm install -g pyret-npm
+
 COPY src /code
 WORKDIR /code
 ENTRYPOINT ["python3", "main.py"]
