@@ -23,7 +23,7 @@ def translate_type(some_type: "ast") -> str:
             return f"List<{translate_type(elts)}>"
         case ast.Subscript(ast.Name("Tuple"), ast.Tuple(elts, _), _):
             return "{" + "; ".join([translate_type(elt) for elt in elts]) + "}"
-        case ast.Subscript(ast.name("Dict"), ast.Tuple([ast.Name(k), ast.Name(v)], _), _):
+        case ast.Subscript(ast.Name("Dict"), ast.Tuple([ast.Name(k), ast.Name(v)], _), _):
             needs_hashmap = True
             key, value = translate_type(k), translate_type(v)
             return f"HashMap<{key}, {value}>"
@@ -50,18 +50,17 @@ def coerce(expr: str, some_type) -> str:
 
 
 
-class LanguageTranslator:
+class Translator:
 
     stop = ["\nend"]
 
     def gen_literal(self, c: bool | str | int | float | None) -> TargetExp:
-        match type(c):
-            case bool:
-                return repr(c).lower()
-            case str:
-                return f'"{c}"'
-            case _:
-                return repr(c)
+        if type(c) == bool:
+            return repr(c).lower()
+        elif type(c) == str:
+            return f'"{c}"'
+        else:
+            return repr(c)
 
     def gen_var(self, v: str) -> TargetExp:
         return v
@@ -80,7 +79,7 @@ class LanguageTranslator:
         pass
 
     def gen_call(self, func: TargetExp, args: List[TargetExp]) -> TargetExp:
-        func + "(" + ", ".join(args) + ")"
+        return func + "(" + ", ".join(args) + ")"
 
     @abstractmethod
     def translate_prompt(self, name: str, args: List[ast.arg], returns: ast.expr, description: str) -> str:
